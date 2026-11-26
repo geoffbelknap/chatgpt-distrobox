@@ -2,14 +2,16 @@
 set -euo pipefail
 
 usage() {
-    echo "Usage: ./install.sh [--name CONTAINER]"
+    echo "Usage: ./install.sh [--name CONTAINER] [--enable-ujust-updates]"
     echo "Install the official ChatGPT RPM in Fedora 44 Distrobox (default: chatgpt)."
 }
 
 name=chatgpt
+enable_ujust=false
 while (($#)); do
     case "$1" in
         --name) [[ $# -ge 2 ]] || { usage >&2; exit 2; }; name=$2; shift 2 ;;
+        --enable-ujust-updates) enable_ujust=true; shift ;;
         --help|-h) usage; exit 0 ;;
         *) usage >&2; exit 2 ;;
     esac
@@ -45,4 +47,17 @@ distrobox enter --name "$name" -- bash -s -- "$project_dir/keys/openai.asc" \
     < "$project_dir/scripts/install-in-container.sh"
 echo "Installed. Open ChatGPT (Distrobox) from your applications menu."
 echo "Updates: distrobox upgrade $name"
-echo "On Bazzite, see README.md to include Distroboxes in ujust update."
+if [[ $enable_ujust == true ]]; then
+    sudo python3 "$project_dir/scripts/enable-ujust-updates.py"
+elif command -v uupd >/dev/null && [[ -f /etc/uupd/config.json ]]; then
+    if python3 -c 'import json; import sys; sys.exit(json.load(open("/etc/uupd/config.json")).get("modules", {}).get("distrobox", {}).get("disable") is not False)'; then
+        echo "Distrobox updates are already included in ujust update."
+    elif [[ -t 1 ]] && { read -r -p 'Include all Distroboxes in ujust update? [y/N] ' answer </dev/tty; }; then
+        case $answer in
+            y|Y|yes|YES) sudo python3 "$project_dir/scripts/enable-ujust-updates.py" ;;
+            *) echo "Update integration left unchanged." ;;
+        esac
+    else
+        printf 'To enable ujust updates later: sudo python3 %q\n' "$project_dir/scripts/enable-ujust-updates.py"
+    fi
+fi

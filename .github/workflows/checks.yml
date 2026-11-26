@@ -12,8 +12,8 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Check shell scripts
         run: |
-          bash -n install.sh scripts/install-in-container.sh
-          shellcheck install.sh scripts/install-in-container.sh
+          bash -n bootstrap.sh install.sh scripts/install-in-container.sh
+          shellcheck bootstrap.sh install.sh scripts/install-in-container.sh
       - name: Test installer and update configuration
         run: python3 -m unittest discover -s tests -v
       - name: Check public signing key fingerprint

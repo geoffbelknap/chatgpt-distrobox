@@ -6,8 +6,8 @@ Describe the problem, behavior change, and validation in pull requests.
 ## Local checks
 
 ```bash
-bash -n install.sh scripts/install-in-container.sh
-shellcheck install.sh scripts/install-in-container.sh
+bash -n bootstrap.sh install.sh scripts/install-in-container.sh
+shellcheck bootstrap.sh install.sh scripts/install-in-container.sh
 python3 -m unittest discover -s tests -v
 ```
 
@@ -16,6 +16,10 @@ input, installer failure paths, and container command construction. They do not
 download or install the proprietary app. CI runs these checks without secrets.
 
 ## Interactive installation check
+
+For a local checkout, clone this repository under your shared home and run the
+installer directly. To exercise bootstrap changes before publication, mock curl
+as in `tests/test_bootstrap.py`; the public bootstrap always downloads main.
 
 Use a separate container so normal work is unaffected:
 

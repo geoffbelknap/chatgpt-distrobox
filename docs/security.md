@@ -1,5 +1,13 @@
 # Security and verification
 
+The one-command install executes this project's bootstrap script from GitHub.
+It downloads the required integration files as one repository snapshot over
+HTTPS and fully extracts them before executing setup. They remain under
+`~/.local/share/chatgpt-distrobox` for the signing key and update helper. This
+trusts this GitHub project to supply installer code; the RPM signature check
+verifies the separate application download. Review the bootstrap and installer
+or clone the repository first if you prefer inspecting code before execution.
+
 The installer downloads OpenAI's RPM directly from:
 
 `https://persistent.oaistatic.com/codex-app-prod/linux/rpm/latest/chatgpt.<arch>.rpm`
